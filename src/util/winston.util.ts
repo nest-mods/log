@@ -62,7 +62,7 @@ const DEFAULT_LABEL = 'default';
 export function getLogger(label = DEFAULT_LABEL) {
 
   if (_.isEmpty(winston.loggers.options.transports)) {
-    winston.loggers.options.transports = [new transports.Console({ level: process.env.DEBUG_LEVEL || 'silly' })];
+    winston.loggers.options.transports = [new transports.Console({level: process.env.DEBUG_LEVEL || 'info'})];
   }
 
   if (!winston.loggers.has(label)) {
