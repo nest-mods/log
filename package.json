@@ -1,6 +1,6 @@
 {
   "name": "@nest-mods/log",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "repository": "https://github.com/nest-mods/log",
   "main": "./dist/index.js",
@@ -43,6 +43,7 @@
     "winston": "^3.2.1"
   },
   "dependencies": {
+    "object-tojson": "^1.0.1",
     "prettyjson": "^1.2.1",
     "tslib": "^1.9.3"
   },

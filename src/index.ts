@@ -25,3 +25,5 @@
 export * from './log.module';
 export * from './service/winston-logger.service';
 export * from './decorator/log.decorator';
+export * from './decorator/log-invoke.decorator';
+

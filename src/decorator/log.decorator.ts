@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-import {Logger} from '@nestjs/common';
-import * as _ from 'lodash';
-import {getLogger} from '../util/winston.util';
+import { Logger } from '@nestjs/common';
+import { getLogger } from '../util/winston.util';
+import { Helpers } from '../util/helpers.util';
 
 export interface InjectLoggerOptions {
   context?: string;
@@ -36,7 +36,7 @@ export interface InjectLoggerOptions {
 
 export const Log: (options?: InjectLoggerOptions) => PropertyDecorator = (options = {}) => {
   return (target: object, propertyKey: string | symbol) => {
-    const context = options.context || _.isFunction(target) ? (target as any).name : target.constructor.name;
+    const context = options.context || Helpers.getClassName(target);
     const isTimeDiffEnabled = options.isTimeDiffEnabled;
     target[propertyKey] = new Logger(context, isTimeDiffEnabled);
   };
@@ -49,7 +49,7 @@ export const Log: (options?: InjectLoggerOptions) => PropertyDecorator = (option
 export const Log2: () => PropertyDecorator = () => {
   Logger.error(`@Log2() is deprecated. Use @Log() for instead.`, (new Error().stack).split('\n')[2], 'LogModule');
   return (target: object, propertyKey: string | symbol) => {
-    const context = _.isFunction(target) ? (target as any).name : target.constructor.name;
+    const context = Helpers.getClassName(target);
     target[propertyKey] = getLogger(context);
   };
 };

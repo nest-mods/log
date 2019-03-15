@@ -23,7 +23,7 @@
  */
 
 /*
- * Created by Diluka on 2019-02-25.
+ * Created by Diluka on 2019-03-15.
  *
  *
  * ----------- 神 兽 佑 我 -----------
@@ -50,103 +50,15 @@
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
-import { Test } from '@nestjs/testing';
-import { Injectable, LoggerService } from '@nestjs/common';
-import { Log, LogModule } from '../src';
-import * as winston from 'winston';
-import { LogInvoke } from '../src';
+import * as _ from 'lodash';
+import * as objectToJson from 'object-tojson';
 
-@Injectable()
-class DemoService {
-
-  @Log() private logger: LoggerService;
-
-  test1(p1: string) {
-    this.logger.log(`print p1 ${p1}`);
+export namespace Helpers {
+  export function getClassName(target: object) {
+    return _.isFunction(target) ? (target as any).name : target.constructor.name;
   }
 
-  test2() {
-    this.logger.log({
-      message: 'test2',
-      level: 'error',
-    });
-  }
-
-  test3() {
-    this.logger.warn('test3');
-  }
-
-  @LogInvoke({ afterLevel: 'info' })
-  test4(a: string, b: number) {
-    this.logger.log({
-      message: 'test4',
-      level: 'debug',
-    });
-  }
-
-  @LogInvoke({ message: 'calling test5', printString: true })
-  test5() {
-    this.logger.log({ data: 'ok' });
-    return { test: 'ok' };
+  export function stringify(data: any) {
+    return JSON.stringify(objectToJson(data)).replace('\n', ' ');
   }
 }
-
-class TestTransport extends winston.transports.Console {
-  constructor() {
-    super({
-      level: 'silly',
-    });
-  }
-
-  log(info: any, next: () => void): any {
-    super.log(info, next);
-    expect(info).toHaveProperty('label');
-    if (done) {
-      done();
-    }
-  }
-}
-
-let done;
-
-describe('日志测试', function() {
-
-  let service: DemoService;
-
-  beforeAll(async () => {
-    winston.loggers.options.transports = [new TestTransport()];
-    const module = await Test.createTestingModule({
-      imports: [LogModule],
-      providers: [DemoService],
-    }).compile();
-
-    service = module.get(DemoService);
-  });
-
-  beforeEach(() => done = null);
-
-  it('test1', function(d) {
-    done = d;
-    service.test1('test1');
-  });
-
-  it('test2', function(d) {
-    done = d;
-    service.test2();
-  });
-
-  it('test3', function(d) {
-    done = d;
-    service.test3();
-  });
-
-  it('test4', function(d) {
-    done = d;
-    service.test4('test', 123);
-  });
-
-  it('test5', function(d) {
-    done = d;
-    service.test5();
-  });
-});
