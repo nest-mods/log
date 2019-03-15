@@ -50,9 +50,9 @@
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
-import {Injectable, LoggerService} from '@nestjs/common';
+import { Injectable, LoggerService } from '@nestjs/common';
 import * as _ from 'lodash';
-import {getLogger} from '../util/winston.util';
+import { getLogger } from '../util/winston.util';
 
 @Injectable()
 export class WinstonLoggerService implements LoggerService {
@@ -91,7 +91,7 @@ export class WinstonLoggerService implements LoggerService {
     });
   }
 
-  private processMessage(message: any) {
+  private processMessage(message: any): any {
     return _.isObject(message) ? message : { message };
   }
 

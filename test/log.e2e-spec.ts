@@ -50,9 +50,9 @@
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
-import {Test} from '@nestjs/testing';
-import {Injectable, LoggerService} from '@nestjs/common';
-import {Log, LogModule} from '../src';
+import { Test } from '@nestjs/testing';
+import { Injectable, LoggerService } from '@nestjs/common';
+import { Log, LogModule } from '../src';
 import * as winston from 'winston';
 
 @Injectable()
@@ -80,6 +80,10 @@ class DemoService {
       message: 'test4',
       level: 'debug',
     });
+  }
+
+  test5() {
+    this.logger.log({ data: 'ok' });
   }
 }
 
@@ -135,5 +139,10 @@ describe('日志测试', function() {
   it('test4', function(d) {
     done = d;
     service.test4();
+  });
+
+  it('test5', function(d) {
+    done = d;
+    service.test5();
   });
 });

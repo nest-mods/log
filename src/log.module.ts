@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import {Global, Logger, Module} from '@nestjs/common';
-import {WinstonLoggerService} from './service/winston-logger.service';
+import { Global, Logger, Module } from '@nestjs/common';
+import { WinstonLoggerService } from './service/winston-logger.service';
 
 @Global()
 @Module({
