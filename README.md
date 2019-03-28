@@ -3,4 +3,4 @@
 
 Log module integration with winstion for nestjs
 
-install via npm `npm i @nest-mods/log`
+install via npm `npm i @nest-mods/log lodash winston`
