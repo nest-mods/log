@@ -104,6 +104,22 @@ export class WinstonLoggerService implements LoggerService {
     this.logv(entry, context);
   }
 
+  debug(message: any | WinstonLoggerMessage, context?: string) {
+    const entry = {
+      level: 'debug',
+      ...this.processMessage(message),
+    };
+    this.logv(entry, context);
+  }
+
+  verbose(message: any | WinstonLoggerMessage, context?: string) {
+    const entry = {
+      level: 'silly',
+      ...this.processMessage(message),
+    };
+    this.logv(entry, context);
+  }
+
   private logv(entry: WinstonLoggerMessage, context?: string) {
     this.applyFeatures(entry);
     getLogger(context).log(entry as LogEntry);
