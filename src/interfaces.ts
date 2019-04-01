@@ -23,7 +23,7 @@
  */
 
 /*
- * Created by Diluka on 2018/6/20.
+ * Created by Diluka on 2019-04-01.
  *
  *
  * ----------- 神 兽 佑 我 -----------
@@ -50,73 +50,33 @@
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
-import { Logger } from '@nestjs/common';
-import { InjectLoggerOptions } from './log.decorator';
-import { Helpers } from '../util/helpers.util';
+export type LevelFilterType = string | string[];
 
-export interface LogInvokeOptions extends InjectLoggerOptions {
-  /**
-   * log message, default is method sign
-   */
-  message?: string;
-  /**
-   * log level for before invoking
-   */
-  beforeLevel?: string;
-  /**
-   * log level for after invoked
-   */
-  afterLevel?: string;
-  /**
-   * stringify args & results
-   */
-  printString?: boolean;
-  /**
-   * print params
-   */
-  showParams?: boolean;
-  /**
-   * print stack line
-   */
-  showStackLine?: boolean;
-  /**
-   * print returns
-   */
-  showReturns?: boolean;
+export interface LogModuleOptions {
+  msLevel?: LevelFilterType;
+  stackLineLevel?: LevelFilterType;
+  metaLevel?: LevelFilterType;
 }
 
-export function LogInvoke(options: LogInvokeOptions = {}): MethodDecorator {
-  return (target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>) => {
-    const className = Helpers.getClassName(target);
-    const context = options.context || className;
-    const logger = new Logger(context);
-    const methodSign = `${className}#${propertyKey as any}`;
-    const method = descriptor.value;
-    descriptor.value = async function(...args: any[]) {
-      logger.log({
-        message: options.message || `Invoking ${methodSign}`,
-        level: options.beforeLevel || 'info',
-        params: options.printString ? Helpers.stringify(args) : args,
-        showMeta: options.showParams,
-        showStackLine: options.showStackLine,
-      });
-      try {
-        let result = await method.apply(this, args);
-        logger.log({
-          message: options.message || `Invoked ${methodSign}`,
-          level: options.afterLevel || 'silly',
-          returns: options.printString ? Helpers.stringify(result) : result,
-          showMeta: options.showReturns,
-        });
-        return result;
-      } catch (e) {
-        logger.error({
-          message: options.message || `Invoke ${methodSign} failed`,
-          level: options.afterLevel || 'silly',
-        }, e.message);
-        throw e;
-      }
-    };
-    return descriptor;
-  };
+export interface WinstonLoggerMessage {
+  message?: string;
+  level?: string;
+
+  showMs?: boolean;
+  showStackLine?: boolean;
+  showMeta?: boolean;
+
+  [key: string]: any;
+
+  [key: number]: any;
+}
+
+declare module '@nestjs/common' {
+  export interface LoggerService {
+    log(message: any | WinstonLoggerMessage, context?: string): any;
+
+    error(message: any | WinstonLoggerMessage, trace?: string, context?: string): any;
+
+    warn(message: any | WinstonLoggerMessage, context?: string): any;
+  }
 }

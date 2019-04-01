@@ -51,9 +51,9 @@
  * ----------- 永 无 BUG ------------
  */
 import * as winston from 'winston';
-import {format, transports} from 'winston';
+import { format, transports } from 'winston';
 import * as _ from 'lodash';
-import {render} from 'prettyjson';
+import { render } from 'prettyjson';
 // import * as rootPath from 'app-root-path';
 // import * as path from 'path';
 
@@ -62,7 +62,7 @@ const DEFAULT_LABEL = 'default';
 export function getLogger(label = DEFAULT_LABEL) {
 
   if (_.isEmpty(winston.loggers.options.transports)) {
-    winston.loggers.options.transports = [new transports.Console({level: process.env.DEBUG_LEVEL || 'info'})];
+    winston.loggers.options.transports = [new transports.Console({ level: process.env.DEBUG_LEVEL || 'info' })];
   }
 
   if (!winston.loggers.has(label)) {
@@ -149,6 +149,27 @@ const levelToUpper = format(info => {
   return info;
 });
 
-const printLog = format.printf(({ level, message, label, timestamp, ms, stackLine, ...meta }) => {
-  return `[${level}]\t${timestamp}\t[${label}]\t${message} ${ms}${stackLine}${_.isEmpty(meta) ? '' : ('\n' + render(meta))}`;
+const printLog = format.printf(({
+                                  level, message, label, timestamp,
+                                  trace,
+                                  showMs, ms,
+                                  showStackLine, stackLine,
+                                  showMeta, meta, ...otherMeta
+                                }) => {
+  let logString = `[${level}]\t${timestamp}\t[${label}]\t${message}`;
+  if (showMs) {
+    logString += ` ${ms}`;
+  }
+  if (showStackLine) {
+    logString += stackLine;
+  }
+  let o: any = {};
+  if (!_.isEmpty(trace)) {
+    o.trace = trace;
+  }
+  if (showMeta) {
+    o = _.assign(o, meta, otherMeta);
+  }
+  logString += _.isEmpty(o) ? '' : ('\n' + render(o));
+  return logString;
 });

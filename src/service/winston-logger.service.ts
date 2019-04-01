@@ -53,46 +53,69 @@
 import { Injectable, LoggerService } from '@nestjs/common';
 import * as _ from 'lodash';
 import { getLogger } from '../util/winston.util';
+import { LogModuleOptions, WinstonLoggerMessage } from '../interfaces';
+import { Helpers } from '../util/helpers.util';
+import { LogEntry } from 'winston';
+import checkLevelFilter = Helpers.checkLevelFilter;
+
+const defaultOptions: Partial<LogModuleOptions> = {
+  msLevel: ['info', 'warn', 'error'],
+  stackLineLevel: 'silly',
+  metaLevel: 'debug',
+};
 
 @Injectable()
 export class WinstonLoggerService implements LoggerService {
 
   private static instance: LoggerService;
 
-  private constructor() {
+  private constructor(private options: LogModuleOptions) {
   }
 
-  static getInstance() {
+  static getInstance(options?: LogModuleOptions) {
     if (!this.instance) {
-      this.instance = new WinstonLoggerService();
+      this.instance = new WinstonLoggerService(_.defaults(options, defaultOptions));
     }
     return this.instance;
   }
 
-  error(message: any, trace?: string, context?: string): any {
-    getLogger(context).log({
+  error(message: any | WinstonLoggerMessage, trace?: string, context?: string) {
+    const entry = {
       level: 'error',
       ...this.processMessage(message),
       trace,
-    });
+    };
+    this.logv(entry, context);
   }
 
-  log(message: any, context?: string): any {
-    getLogger(context).log({
+  log(message: any | WinstonLoggerMessage, context?: string) {
+    const entry = {
       level: 'info',
       ...this.processMessage(message),
-    });
+    };
+    this.logv(entry, context);
   }
 
-  warn(message: any, context?: string): any {
-    getLogger(context).log({
+  warn(message: any | WinstonLoggerMessage, context?: string) {
+    const entry = {
       level: 'warn',
       ...this.processMessage(message),
-    });
+    };
+    this.logv(entry, context);
+  }
+
+  private logv(entry: WinstonLoggerMessage, context?: string) {
+    this.applyFeatures(entry);
+    getLogger(context).log(entry as LogEntry);
   }
 
   private processMessage(message: any): any {
     return _.isObject(message) ? message : { message };
   }
 
+  private applyFeatures(entry: WinstonLoggerMessage) {
+    entry.showMs = entry.showMs || checkLevelFilter(this.options.msLevel, entry.level);
+    entry.showStackLine = entry.showStackLine || checkLevelFilter(this.options.stackLineLevel, entry.level);
+    entry.showMeta = entry.showMeta || checkLevelFilter(this.options.metaLevel, entry.level);
+  }
 }

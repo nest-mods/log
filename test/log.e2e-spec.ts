@@ -52,9 +52,8 @@
  */
 import { Test } from '@nestjs/testing';
 import { Injectable, LoggerService } from '@nestjs/common';
-import { Log, LogModule } from '../src';
+import { Log, LogInvoke, LogModule } from '../src';
 import * as winston from 'winston';
-import { LogInvoke } from '../src';
 
 @Injectable()
 class DemoService {
@@ -76,7 +75,7 @@ class DemoService {
     this.logger.warn('test3');
   }
 
-  @LogInvoke({ afterLevel: 'info' })
+  @LogInvoke({ afterLevel: 'info', showParams: true })
   test4(a: string, b: number) {
     this.logger.log({
       message: 'test4',
@@ -84,10 +83,15 @@ class DemoService {
     });
   }
 
-  @LogInvoke({ message: 'calling test5', printString: true })
+  @LogInvoke({ message: 'calling test5', printString: true, showReturns: true })
   test5() {
     this.logger.log({ data: 'ok' });
     return { test: 'ok' };
+  }
+
+  @LogInvoke({ message: 'log error' })
+  async test6() {
+    throw new Error('oops!');
   }
 }
 
@@ -148,5 +152,10 @@ describe('日志测试', function() {
   it('test5', function(d) {
     done = d;
     service.test5();
+  });
+
+  it('test6', function(d) {
+    done = d;
+    service.test6().catch(e => null);
   });
 });

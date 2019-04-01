@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
-import { Global, Logger, Module } from '@nestjs/common';
+import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
 import { WinstonLoggerService } from './service/winston-logger.service';
+import { LogModuleOptions } from './interfaces';
 
 @Global()
 @Module({
@@ -37,23 +38,15 @@ export class LogModule {
   constructor(private logger: WinstonLoggerService) {
     Logger.overrideLogger(this.logger);
   }
-}
 
-interface WinstonLoggerMessage {
-  message?: string;
-  level?: string;
-
-  [key: string]: any;
-
-  [key: number]: any;
-}
-
-declare module '@nestjs/common' {
-  export interface LoggerService {
-    log(message: any | WinstonLoggerMessage, context?: string): any;
-
-    error(message: any | WinstonLoggerMessage, trace?: string, context?: string): any;
-
-    warn(message: any | WinstonLoggerMessage, context?: string): any;
+  static forRoot(options: LogModuleOptions = {}): DynamicModule {
+    return {
+      module: LogModule,
+      providers: [{
+        provide: WinstonLoggerService,
+        useFactory: () => WinstonLoggerService.getInstance(options),
+      }],
+    };
   }
 }
+
