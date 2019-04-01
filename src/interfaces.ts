@@ -70,13 +70,3 @@ export interface WinstonLoggerMessage {
 
   [key: number]: any;
 }
-
-declare module '@nestjs/common' {
-  export interface LoggerService {
-    log(message: any | WinstonLoggerMessage, context?: string): any;
-
-    error(message: any | WinstonLoggerMessage, trace?: string, context?: string): any;
-
-    warn(message: any | WinstonLoggerMessage, context?: string): any;
-  }
-}
