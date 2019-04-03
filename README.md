@@ -4,3 +4,8 @@
 Log module integration with winstion for nestjs
 
 install via npm `npm i @nest-mods/log lodash winston`
+
+## Usages
+- use `@Log` to inject `LoggerService`
+- use `@LogInvoke` to aop log method invoke
+- import `LogModule` to change default `Logger` into `winston`
