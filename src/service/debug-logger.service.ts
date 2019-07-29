@@ -52,9 +52,9 @@
  */
 import { Injectable, LoggerService } from '@nestjs/common';
 import * as _ from 'lodash';
+import * as DebugLogger from '../../libs/debug-logger.js';
+import * as DebugTrace from '../../libs/debug-trace.js';
 import { LevelType } from '../interfaces';
-import * as DebugLogger from './debug-logger';
-import * as DebugTrace from './debug-trace';
 
 const AppName = process.env.npm_package_name || 'app';
 
