@@ -50,9 +50,10 @@
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
-import { Logger } from '@nestjs/common';
-import { InjectLoggerOptions } from './log.decorator';
+import { Logger, LoggerService } from '@nestjs/common';
+import { LevelType } from '../interfaces';
 import { Helpers } from '../util/helpers.util';
+import { InjectLoggerOptions } from './log.decorator';
 
 export interface LogInvokeOptions extends InjectLoggerOptions {
   /**
@@ -62,11 +63,11 @@ export interface LogInvokeOptions extends InjectLoggerOptions {
   /**
    * log level for before invoking
    */
-  beforeLevel?: string;
+  beforeLevel?: LevelType;
   /**
    * log level for after invoked
    */
-  afterLevel?: string;
+  afterLevel?: LevelType;
   /**
    * stringify args & results
    */
@@ -77,12 +78,17 @@ export interface LogInvokeOptions extends InjectLoggerOptions {
   showParams?: boolean;
   /**
    * print stack line
+   * @deprecated not work
    */
   showStackLine?: boolean;
   /**
    * print returns
    */
   showReturns?: boolean;
+}
+
+function logWithLevel(logger: LoggerService, level: string) {
+  return (level in logger ? logger[level] : logger.log).bind(logger);
 }
 
 export function LogInvoke(options: LogInvokeOptions = {}): MethodDecorator {
@@ -93,27 +99,26 @@ export function LogInvoke(options: LogInvokeOptions = {}): MethodDecorator {
     const methodSign = `${className}#${propertyKey as any}`;
     const method = descriptor.value;
     descriptor.value = async function(...args: any[]) {
-      logger.log({
-        message: options.message || `Invoking ${methodSign}`,
-        level: options.beforeLevel || 'info',
-        params: options.printString ? Helpers.stringify(args) : args,
-        showMeta: options.showParams,
-        showStackLine: options.showStackLine,
-      });
+      logWithLevel(logger, options.beforeLevel || 'info')([
+        options.message || `Invoking ${methodSign}`,
+        options.showParams
+          ? options.printString ? Helpers.stringify(args) : args
+          : '',
+      ]);
       try {
         let result = await method.apply(this, args);
-        logger.log({
-          message: options.message || `Invoked ${methodSign}`,
-          level: options.afterLevel || 'silly',
-          returns: options.printString ? Helpers.stringify(result) : result,
-          showMeta: options.showReturns,
-        });
+        logWithLevel(logger, options.afterLevel || 'trace')([
+          options.message || `Invoked ${methodSign}`,
+          options.showReturns
+            ? options.printString ? Helpers.stringify(result) : result
+            : '',
+        ]);
         return result;
       } catch (e) {
-        logger.error({
-          message: options.message || `Invoke ${methodSign} failed`,
-          level: options.afterLevel || 'silly',
-        }, e.message);
+        logWithLevel(logger, options.afterLevel || 'trace')([
+          options.message || `Invoke ${methodSign} failed`,
+          e,
+        ]);
         throw e;
       }
     };

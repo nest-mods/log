@@ -23,7 +23,6 @@
  */
 
 import { Logger } from '@nestjs/common';
-import { getLogger } from '../util/winston.util';
 import { Helpers } from '../util/helpers.util';
 
 export interface InjectLoggerOptions {
@@ -39,17 +38,5 @@ export const Log: (options?: InjectLoggerOptions) => PropertyDecorator = (option
     const context = options.context || Helpers.getClassName(target);
     const isTimeDiffEnabled = options.isTimeDiffEnabled;
     target[propertyKey] = new Logger(context, isTimeDiffEnabled);
-  };
-};
-
-/**
- * get original winston logger
- * @deprecated due to config issue
- */
-export const Log2: () => PropertyDecorator = () => {
-  Logger.error(`@Log2() is deprecated. Use @Log() for instead.`, (new Error().stack).split('\n')[2], 'LogModule');
-  return (target: object, propertyKey: string | symbol) => {
-    const context = Helpers.getClassName(target);
-    target[propertyKey] = getLogger(context);
   };
 };

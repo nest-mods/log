@@ -52,8 +52,6 @@
  */
 import * as _ from 'lodash';
 import * as objectToJson from 'object-tojson';
-import { LevelFilterType } from '../interfaces';
-import * as winston from 'winston';
 
 export namespace Helpers {
   export function getClassName(target: object) {
@@ -62,16 +60,5 @@ export namespace Helpers {
 
   export function stringify(data: any) {
     return JSON.stringify(objectToJson(data)).replace('\n', ' ');
-  }
-
-  export function checkLevelFilter(lf: LevelFilterType, level: string) {
-    if (_.isNil(lf)) {
-      return false;
-    }
-    if (_.isArray(lf)) {
-      return _.includes(lf, level);
-    } else {
-      return winston.config.npm.levels[lf] <= winston.config.npm.levels[level];
-    }
   }
 }

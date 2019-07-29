@@ -23,7 +23,7 @@
  */
 
 /*
- * Created by Diluka on 2019-04-01.
+ * Created by Diluka on 2019-07-26.
  *
  *
  * ----------- 神 兽 佑 我 -----------
@@ -50,4 +50,64 @@
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
-export type LevelType = 'trace' | 'debug' | 'log' | 'info' | 'warn' | 'error';
+import { Injectable, LoggerService } from '@nestjs/common';
+import * as _ from 'lodash';
+import { LevelType } from '../interfaces';
+import * as DebugLogger from './debug-logger';
+import * as DebugTrace from './debug-trace';
+
+const AppName = process.env.npm_package_name || 'app';
+
+DebugLogger.inspectOptions.colors = true;
+
+export enum Levels {
+  TRACE = 'trace',
+  DEBUG = 'debug',
+  LOG = 'log',
+  INFO = 'info',
+  WARN = 'warn',
+  ERROR = 'error'
+}
+
+@Injectable()
+export class DebugLoggerService implements LoggerService {
+
+  constructor() {
+    DebugTrace({ always: true });
+  }
+
+  debug(message: any, context?: string): any {
+    this.logv('debug', message, context);
+  }
+
+  error(message: any, trace?: string, context?: string): any {
+    if (_.isArray(message) && trace) {
+      message.push(trace);
+    } else if (trace) {
+      message = [message, trace];
+    }
+    this.logv('error', message, context);
+  }
+
+  log(message: any, context?: string): any {
+    this.logv('info', message, context);
+  }
+
+  verbose(message: any, context?: string): any {
+    this.logv('trace', message, context);
+  }
+
+  warn(message: any, context?: string): any {
+    this.logv('warn', message, context);
+  }
+
+  private logv(level: LevelType, entry: any | any[], context?: string) {
+    const logger = DebugLogger(`${AppName}:${context}`)[level];
+    if (_.isArray(entry)) {
+      logger(...entry);
+    } else {
+      logger(entry);
+    }
+  }
+
+}
