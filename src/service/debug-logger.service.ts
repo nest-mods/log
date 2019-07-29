@@ -50,13 +50,12 @@
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
-import { Injectable, LoggerService } from '@nestjs/common';
+import { Inject, Injectable, LoggerService, Optional } from '@nestjs/common';
 import * as _ from 'lodash';
 import * as DebugLogger from '../../libs/debug-logger.js';
 import * as DebugTrace from '../../libs/debug-trace.js';
+import { LOG_APP_NAME_KEY } from '../constants';
 import { LevelType } from '../interfaces';
-
-const AppName = process.env.npm_package_name || 'app';
 
 DebugLogger.inspectOptions.colors = true;
 
@@ -72,7 +71,7 @@ export enum Levels {
 @Injectable()
 export class DebugLoggerService implements LoggerService {
 
-  constructor() {
+  constructor(@Inject(LOG_APP_NAME_KEY) @Optional() private appName: string) {
     DebugTrace({ always: true });
   }
 
@@ -102,7 +101,7 @@ export class DebugLoggerService implements LoggerService {
   }
 
   private logv(level: LevelType, entry: any | any[], context?: string) {
-    const logger = DebugLogger(`${AppName}:${context}`)[level];
+    const logger = DebugLogger(`${this.appName || 'app'}:${context}`)[level];
     if (_.isArray(entry)) {
       logger(...entry);
     } else {

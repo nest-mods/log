@@ -25,27 +25,28 @@ function hook_stream(stream, callback) {
 
 
 module.exports.lastCharacter = '\n';
-function getLastCharacter(string, encoding, fd){
+
+function getLastCharacter(string, encoding, fd) {
   module.exports.lastCharacter = string.slice(-1);
 }
 
 var unhook;
 var unhookStderr;
-module.exports.enable = function enable(){
-  if(!unhook){
+module.exports.enable = function enable() {
+  if (!unhook) {
     unhook = hook_stream(process.stdout, getLastCharacter);
   }
-  if(!unhookStderr){
+  if (!unhookStderr) {
     unhookStderr = hook_stream(process.stderr, getLastCharacter);
   }
 };
 
-module.exports.disable = function disable(){
-  if(unhook){
+module.exports.disable = function disable() {
+  if (unhook) {
     unhook();
     unhook = undefined;
   }
-  if(unhookStderr){
+  if (unhookStderr) {
     unhookStderr();
     unhookStderr = undefined;
   }

@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-import { Global, Logger, Module } from '@nestjs/common';
+import { DynamicModule, Logger, Module } from '@nestjs/common';
+import { LOG_APP_NAME_KEY } from './constants';
 import { DebugLoggerService } from './service/debug-logger.service';
 
-@Global()
 @Module({
   providers: [DebugLoggerService],
   exports: [DebugLoggerService],
@@ -33,6 +33,16 @@ import { DebugLoggerService } from './service/debug-logger.service';
 export class LogModule {
   constructor(private logger: DebugLoggerService) {
     Logger.overrideLogger(this.logger);
+  }
+
+  static forRoot(appName?: string): DynamicModule {
+    return {
+      module: LogModule,
+      providers: [{
+        provide: LOG_APP_NAME_KEY,
+        useValue: appName,
+      }],
+    };
   }
 }
 

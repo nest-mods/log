@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
-import { Injectable, LoggerService } from '@nestjs/common';
 /*
- * Created by Diluka on 2019-02-25.
+ * Created by Diluka on 2019-07-29.
  *
  *
  * ----------- 神 兽 佑 我 -----------
@@ -51,77 +50,5 @@ import { Injectable, LoggerService } from '@nestjs/common';
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
-import { Test } from '@nestjs/testing';
-import { Log, LogInvoke, LogModule } from '../src';
-
-@Injectable()
-class DemoService {
-
-  @Log() private logger: LoggerService;
-
-  test1(p1: string) {
-    this.logger.log(`print p1 ${p1}`);
-  }
-
-  test2() {
-    this.logger.error(['test2 %s', 'OK'], new Error('test2') as any);
-  }
-
-  test3() {
-    this.logger.warn('test3');
-  }
-
-  @LogInvoke({ afterLevel: 'info', showParams: true })
-  test4(a: string, b: number) {
-    this.logger.debug('test4');
-  }
-
-  @LogInvoke({ message: 'calling test5', printString: true, showReturns: true })
-  test5() {
-    this.logger.log({ data: 'ok' });
-    return { test: 'ok' };
-  }
-
-  @LogInvoke({ message: 'log error' })
-  async test6() {
-    throw new Error('oops!');
-  }
-}
-
-describe('日志测试', function() {
-
-  let service: DemoService;
-
-  beforeAll(async () => {
-    const module = await Test.createTestingModule({
-      imports: [LogModule.forRoot('test')],
-      providers: [DemoService],
-    }).compile();
-
-    service = module.get(DemoService);
-  });
-
-  it('test1', function() {
-    service.test1('test1');
-  });
-
-  it('test2', function() {
-    service.test2();
-  });
-
-  it('test3', function() {
-    service.test3();
-  });
-
-  it('test4', function() {
-    service.test4('test', 123);
-  });
-
-  it('test5', function() {
-    service.test5();
-  });
-
-  it('test6', function() {
-    service.test6().catch(e => null);
-  });
-});
+export const LOG_MODULE_ID = 'af3B4BbE-2c02-5Ad6-63Da-A801114D87b8';
+export const LOG_APP_NAME_KEY = `${LOG_MODULE_ID}:APP_NAME`;
