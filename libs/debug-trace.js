@@ -78,7 +78,7 @@ module.exports = function debugTrace(options) {
   var fn = console[name];
   console[name] = function() {
     var args = arguments;
-    if (console._trace || console.traceOptions.always) {
+    if (console._trace || (console.traceOptions && console.traceOptions.always)) {
       if (args.length === 1) args = ['', args[0]];
       if (Buffer.isBuffer(args[0])) {
         args[0] = args[0].inspect();
