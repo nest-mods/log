@@ -1,6 +1,6 @@
 {
   "name": "@nest-mods/log",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "license": "MIT",
   "repository": "https://github.com/nest-mods/log",
   "main": "./dist/index.js",
@@ -19,33 +19,36 @@
     "@nestjs/common": ">=6",
     "@nestjs/core": ">=6",
     "lodash": ">=4",
-    "reflect-metadata": "^0.1.12",
-    "winston": ">=3"
+    "moment": ">=2",
+    "reflect-metadata": "^0.1.12"
   },
   "devDependencies": {
-    "@nestjs/common": "^6.2.4",
-    "@nestjs/core": "^6.2.4",
-    "@nestjs/testing": "^6.2.4",
-    "@types/jest": "^24.0.13",
-    "@types/lodash": "^4.14.133",
-    "@types/node": "^10.14.8",
+    "@nestjs/common": "^6.5.3",
+    "@nestjs/core": "^6.5.3",
+    "@nestjs/testing": "^6.5.3",
+    "@types/debug": "^4.1.4",
+    "@types/jest": "^24.0.15",
+    "@types/lodash": "^4.14.136",
+    "@types/node": "^10.14.13",
     "jest": "^24.8.0",
-    "lodash": "^4.17.11",
-    "prettier": "^1.17.1",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "prettier": "^1.18.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^2.6.3",
     "rxjs": "^6.5.2",
     "ts-jest": "^24.0.2",
     "ts-loader": "^5.4.5",
-    "ts-node": "^8.2.0",
-    "tslint": "^5.17.0",
-    "typescript": "^3.5.1",
-    "winston": "^3.2.1"
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
   },
   "dependencies": {
+    "callsite": "^1.0.0",
+    "debug": "^4.1.1",
     "object-tojson": "^1.0.1",
-    "prettyjson": "^1.2.1",
-    "tslib": "^1.9.3"
+    "tslib": "^1.10.0",
+    "tty": "^1.0.1"
   },
   "engines": {
     "node": ">=10"

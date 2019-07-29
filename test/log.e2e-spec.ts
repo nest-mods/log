@@ -53,7 +53,6 @@
 import { Test } from '@nestjs/testing';
 import { Injectable, LoggerService } from '@nestjs/common';
 import { Log, LogInvoke, LogModule } from '../src';
-import * as winston from 'winston';
 
 @Injectable()
 class DemoService {
@@ -65,10 +64,7 @@ class DemoService {
   }
 
   test2() {
-    this.logger.log({
-      message: 'test2',
-      level: 'error',
-    });
+    this.logger.error(['test2 %s', 'OK'], new Error('test2') as any);
   }
 
   test3() {
@@ -77,10 +73,7 @@ class DemoService {
 
   @LogInvoke({ afterLevel: 'info', showParams: true })
   test4(a: string, b: number) {
-    this.logger.log({
-      message: 'test4',
-      level: 'debug',
-    });
+    this.logger.debug('test4');
   }
 
   @LogInvoke({ message: 'calling test5', printString: true, showReturns: true })
@@ -95,30 +88,11 @@ class DemoService {
   }
 }
 
-class TestTransport extends winston.transports.Console {
-  constructor() {
-    super({
-      level: 'silly',
-    });
-  }
-
-  log(info: any, next: () => void): any {
-    super.log(info, next);
-    expect(info).toHaveProperty('label');
-    if (done) {
-      done();
-    }
-  }
-}
-
-let done;
-
 describe('日志测试', function() {
 
   let service: DemoService;
 
   beforeAll(async () => {
-    winston.loggers.options.transports = [new TestTransport()];
     const module = await Test.createTestingModule({
       imports: [LogModule],
       providers: [DemoService],
@@ -127,35 +101,27 @@ describe('日志测试', function() {
     service = module.get(DemoService);
   });
 
-  beforeEach(() => done = null);
-
-  it('test1', function(d) {
-    done = d;
+  it('test1', function() {
     service.test1('test1');
   });
 
-  it('test2', function(d) {
-    done = d;
+  it('test2', function() {
     service.test2();
   });
 
-  it('test3', function(d) {
-    done = d;
+  it('test3', function() {
     service.test3();
   });
 
-  it('test4', function(d) {
-    done = d;
+  it('test4', function() {
     service.test4('test', 123);
   });
 
-  it('test5', function(d) {
-    done = d;
+  it('test5', function() {
     service.test5();
   });
 
-  it('test6', function(d) {
-    done = d;
+  it('test6', function() {
     service.test6().catch(e => null);
   });
 });

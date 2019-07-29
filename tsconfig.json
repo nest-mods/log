@@ -10,6 +10,7 @@
     "outDir": "./dist",
     "importHelpers": true,
     "baseUrl": "./",
+    "allowJs": true,
     "typeRoots": [
       "node_modules/@types"
     ]
