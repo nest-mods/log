@@ -53,7 +53,6 @@
 import { Inject, Injectable, LoggerService, Optional } from '@nestjs/common';
 import * as _ from 'lodash';
 import * as DebugLogger from '../../libs/debug-logger.js';
-import * as DebugTrace from '../../libs/debug-trace.js';
 import { LOG_APP_NAME_KEY } from '../constants';
 import { LevelType } from '../interfaces';
 
@@ -65,14 +64,14 @@ export enum Levels {
   LOG = 'log',
   INFO = 'info',
   WARN = 'warn',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 @Injectable()
 export class DebugLoggerService implements LoggerService {
 
   constructor(@Inject(LOG_APP_NAME_KEY) @Optional() private appName: string) {
-    DebugTrace({ always: true });
+    // DebugTrace({ always: true });
   }
 
   debug(message: any, context?: string): any {
