@@ -50,7 +50,7 @@
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
-import { Injectable, LoggerService } from '@nestjs/common';
+import { Injectable, Logger, LoggerService } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Log, LogInvoke, LogModule } from '../src';
 

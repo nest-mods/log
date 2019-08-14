@@ -24,6 +24,7 @@
 
 import { Logger } from '@nestjs/common';
 import * as _ from 'lodash';
+import { DebugLoggerService } from '../service/debug-logger.service';
 import { Helpers } from '../util/helpers.util';
 
 export interface InjectLoggerOptions {
@@ -41,7 +42,7 @@ export function Log(prefixOrOptions?: string | InjectLoggerOptions, options: Inj
   if (_.isString(prefixOrOptions)) {
     prefix = prefixOrOptions;
   } else {
-    prefix = 'app';
+    prefix = DebugLoggerService.DEFAULT_PREFIX;
     options = prefixOrOptions || options;
   }
   return (target: object, propertyKey: string | symbol) => {

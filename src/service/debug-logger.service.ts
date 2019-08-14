@@ -70,6 +70,9 @@ export enum Levels {
 @Injectable()
 export class DebugLoggerService implements LoggerService {
 
+  static DEFAULT_PREFIX = 'app';
+  static DEFAULT_MISSING_PREFIX = 'def';
+
   constructor() {
     DebugTrace();
   }
@@ -100,11 +103,22 @@ export class DebugLoggerService implements LoggerService {
   }
 
   private logv(level: LevelType, entry: any | any[], context?: string) {
-    const logger = DebugLogger(context)[level];
+    const label = this.createLabel(context);
+    const logger = DebugLogger(label)[level];
     if (_.isArray(entry)) {
       logger(...entry);
     } else {
       logger(entry);
+    }
+  }
+
+  private createLabel(context?: string) {
+    if (context && !context.includes(':')) {
+      return `${DebugLoggerService.DEFAULT_MISSING_PREFIX}:${context}`;
+    } else if (!context) {
+      return `${DebugLoggerService.DEFAULT_MISSING_PREFIX}`;
+    } else {
+      return context;
     }
   }
 

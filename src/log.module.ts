@@ -28,7 +28,6 @@ import { DebugLoggerService } from './service/debug-logger.service';
 @Global()
 @Module({
   providers: [DebugLoggerService],
-  exports: [DebugLoggerService],
 })
 export class LogModule {
   constructor(private logger: DebugLoggerService) {

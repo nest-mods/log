@@ -53,6 +53,7 @@
 import { Logger, LoggerService } from '@nestjs/common';
 import * as _ from 'lodash';
 import { LevelType } from '../interfaces';
+import { DebugLoggerService } from '../service/debug-logger.service';
 import { Helpers } from '../util/helpers.util';
 import { InjectLoggerOptions } from './log.decorator';
 
@@ -99,7 +100,7 @@ export function LogInvoke(prefixOrOptions?: string | LogInvokeOptions, options: 
   if (_.isString(prefixOrOptions)) {
     prefix = prefixOrOptions;
   } else {
-    prefix = 'app';
+    prefix = DebugLoggerService.DEFAULT_PREFIX;
     options = prefixOrOptions || options;
   }
   return (target: object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>) => {
