@@ -23,6 +23,7 @@
  */
 
 import { Logger } from '@nestjs/common';
+import * as _ from 'lodash';
 import { Helpers } from '../util/helpers.util';
 
 export interface InjectLoggerOptions {
@@ -33,10 +34,19 @@ export interface InjectLoggerOptions {
   isTimeDiffEnabled?: boolean;
 }
 
-export const Log: (options?: InjectLoggerOptions) => PropertyDecorator = (options = {}) => {
+export function Log(prefix?: string, options?: InjectLoggerOptions);
+export function Log(options?: InjectLoggerOptions);
+export function Log(prefixOrOptions?: string | InjectLoggerOptions, options: InjectLoggerOptions = {}) {
+  let prefix;
+  if (_.isString(prefixOrOptions)) {
+    prefix = prefixOrOptions;
+  } else {
+    prefix = 'app';
+    options = prefixOrOptions || options;
+  }
   return (target: object, propertyKey: string | symbol) => {
     const context = options.context || Helpers.getClassName(target);
     const isTimeDiffEnabled = options.isTimeDiffEnabled;
-    target[propertyKey] = new Logger(context, isTimeDiffEnabled);
+    target[propertyKey] = new Logger(`${prefix}:${context}`, isTimeDiffEnabled);
   };
-};
+}

@@ -51,6 +51,7 @@
  * ----------- 永 无 BUG ------------
  */
 import { Logger, LoggerService } from '@nestjs/common';
+import * as _ from 'lodash';
 import { LevelType } from '../interfaces';
 import { Helpers } from '../util/helpers.util';
 import { InjectLoggerOptions } from './log.decorator';
@@ -91,11 +92,20 @@ function logWithLevel(logger: LoggerService, level: string) {
   return (level in logger ? logger[level] : logger.log).bind(logger);
 }
 
-export function LogInvoke(options: LogInvokeOptions = {}): MethodDecorator {
-  return (target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>) => {
+export function LogInvoke(options?: LogInvokeOptions);
+export function LogInvoke(prefix?: string, options?: LogInvokeOptions);
+export function LogInvoke(prefixOrOptions?: string | LogInvokeOptions, options: LogInvokeOptions = {}): MethodDecorator {
+  let prefix;
+  if (_.isString(prefixOrOptions)) {
+    prefix = prefixOrOptions;
+  } else {
+    prefix = 'app';
+    options = prefixOrOptions || options;
+  }
+  return (target: object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>) => {
     const className = Helpers.getClassName(target);
     const context = options.context || className;
-    const logger = new Logger(context);
+    const logger = new Logger(`${prefix}:${context}`);
     const methodSign = `${className}#${propertyKey as any}`;
     const method = descriptor.value;
     descriptor.value = async function(...args: any[]) {
@@ -106,7 +116,7 @@ export function LogInvoke(options: LogInvokeOptions = {}): MethodDecorator {
           : '',
       ]);
       try {
-        let result = await method.apply(this, args);
+        const result = await method.apply(this, args);
         logWithLevel(logger, options.afterLevel || 'trace')([
           options.message || `Invoked ${methodSign}`,
           options.showReturns

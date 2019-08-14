@@ -66,5 +66,5 @@ module.exports = {
   forceExit: true,
 };
 
-process.env.DEBUG = '*:DemoService:*';
+process.env.DEBUG = 'app:*,*:DemoService:*,test:*,demo1:*,demo2:*';
 process.env.DEBUG_LEVEL = 'trace';

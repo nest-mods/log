@@ -53,6 +53,7 @@
 import * as _ from 'lodash';
 import * as objectToJson from 'object-tojson';
 
+// tslint:disable-next-line:no-namespace
 export namespace Helpers {
   export function getClassName(target: object) {
     return _.isFunction(target) ? (target as any).name : target.constructor.name;

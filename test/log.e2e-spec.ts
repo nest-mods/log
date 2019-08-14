@@ -57,7 +57,7 @@ import { Log, LogInvoke, LogModule } from '../src';
 @Injectable()
 class DemoService {
 
-  @Log() private logger: LoggerService;
+  @Log('test') private logger: LoggerService;
 
   test1(p1: string) {
     this.logger.log(`print p1 ${p1}`);
@@ -68,21 +68,21 @@ class DemoService {
   }
 
   test3() {
-    this.logger.warn('test3');
+    this.logger.warn({ test: 'OK' });
   }
 
-  @LogInvoke({ afterLevel: 'info', showParams: true })
+  @LogInvoke('test', { afterLevel: 'info', showParams: true })
   test4(a: string, b: number) {
     this.logger.debug('test4');
   }
 
-  @LogInvoke({ message: 'calling test5', printString: true, showReturns: true })
+  @LogInvoke('test', { message: 'calling test5', printString: true, showReturns: true })
   test5() {
     this.logger.log({ data: 'ok' });
     return { test: 'ok' };
   }
 
-  @LogInvoke({ message: 'log error' })
+  @LogInvoke('test', { message: 'log error' })
   async test6() {
     throw new Error('oops!');
   }
@@ -94,7 +94,7 @@ describe('日志测试', function() {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [LogModule.forRoot('test')],
+      imports: [LogModule],
       providers: [DemoService],
     }).compile();
 

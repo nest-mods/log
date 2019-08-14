@@ -117,12 +117,14 @@ function overwriteDebugLog(debugLog) {
  */
 
 console.traceFormat = function(call, method) {
-  call.filename = call ? call.getFileName().replace(console.traceOptions.cwd, '') : '__unknown__';
-  call.method = method;
-  call.functionName = call.getFunctionName() || 'anonymous';
-  call.getDate = function getDate() {
-    return moment().format('YYYY-MM-DD HH:mm:ss');
-  };
+  if (call) {
+    call.filename = call ? call.getFileName().replace(console.traceOptions.cwd, '') : '__unknown__';
+    call.method = method;
+    call.functionName = call.getFunctionName() || 'anonymous';
+    call.getDate = function getDate() {
+      return moment().format('YYYY-MM-DD HH:mm:ss');
+    };
+  }
 
   var str = console.format(call);
   var color = '99';
