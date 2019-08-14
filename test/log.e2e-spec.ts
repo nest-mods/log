@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import { Injectable, LoggerService } from '@nestjs/common';
 /*
  * Created by Diluka on 2019-02-25.
  *
@@ -51,6 +50,7 @@ import { Injectable, LoggerService } from '@nestjs/common';
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
+import { Injectable, LoggerService } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Log, LogInvoke, LogModule } from '../src';
 

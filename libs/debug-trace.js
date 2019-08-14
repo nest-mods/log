@@ -6,7 +6,7 @@
  * Module dependencies.
  */
 
-var callsite = require('callsite')
+var callsite = require('callsites')
   , tty = require('tty')
   , moment = require('moment')
   , isatty = Boolean(tty.isatty(2) && process.stdout.getWindowSize)
@@ -29,22 +29,22 @@ module.exports = function debugTrace(options) {
   console.traceOptions.colors = typeof options.colors !== 'undefined' ? options.colors : true;
   console.traceOptions.always = typeof options.always !== 'undefined' ? options.always : true;
   console.traceOptions.right = typeof options.right !== 'undefined' ? options.right : false;
-  // if (typeof options.overwriteDebugLog === 'undefined' || options.overwriteDebugLog) overwriteDebugLog(options.overwriteDebugLog);
+  if (typeof options.overwriteDebugLog === 'undefined' || options.overwriteDebugLog) overwriteDebugLog(options.overwriteDebugLog);
   // if (typeof options.patchOutput === 'undefined' || options.patchOutput) patchOutput();
 };
 
-// function overwriteDebugLog(debugLog) {
-//   debugLog = typeof debugLog === 'function' ? debugLog : console.log;
-//   try {
-//     var Debug = require('debug');
-//     Debug.log = function log() {
-//       return debugLog.apply(debugLog, arguments);
-//     };
-//   } catch (error) {
-//     console.log('debug module is not installed');
-//   }
-// }
-//
+function overwriteDebugLog(debugLog) {
+  debugLog = typeof debugLog === 'function' ? debugLog : console.log;
+  try {
+    var Debug = require('debug');
+    Debug.log = function log() {
+      return debugLog.apply(debugLog, arguments);
+    };
+  } catch (error) {
+    console.log('debug module is not installed');
+  }
+}
+
 // function patchOutput() {
 //   var stdout = process.stdout.write;
 //   var stderr = process.stderr.write;
@@ -88,7 +88,10 @@ module.exports = function debugTrace(options) {
       var pad = (args[0] && !console.traceOptions.right || !isatty ? ' ' : '');
       // when using the debug module: dig one level deeper in the stack
       var stack = callsite();
-      var trace = stack[stackIndex];
+      const start = stack.findIndex(s => s.toString().startsWith('DebugLoggerService.logv'));
+      const target = stack.slice(start).findIndex(s => s && s.toString().startsWith('Logger.') && !s.toString().startsWith('Logger.callFunction'));
+      const trace = stack[start + target + 1];
+      // process.stdout.write(trace + '\n');
       // if (stack.length > 2 && trace.getFunctionName() === 'log') {
       //   trace = stack[3];
       //   trace.debug = true;
@@ -114,7 +117,7 @@ module.exports = function debugTrace(options) {
  */
 
 console.traceFormat = function(call, method) {
-  call.filename = call.getFileName().replace(console.traceOptions.cwd, '');
+  call.filename = call ? call.getFileName().replace(console.traceOptions.cwd, '') : '__unknown__';
   call.method = method;
   call.functionName = call.getFunctionName() || 'anonymous';
   call.getDate = function getDate() {
@@ -156,13 +159,14 @@ console.traceFormat = function(call, method) {
  * @api public
  */
 console.format = function(c) {
+  if (!c) return '';
   // skip libs
-  if (c.getFileName().indexOf('node_modules') !== -1 || c.getFileName() === 'internal/process/next_tick.js') {
+  if (c.isNative() || c.getFileName().indexOf('node_modules') !== -1 || c.getFileName().startsWith('internal')) {
     return c.getDate();
   }
   // can not get the proxied method, omit it
-  if (c.filename.startsWith('log-invoke.decorator') && c.functionName === 'anonymous') {
-    return c.getDate();
+  if (c.filename === '__unknown__' || c.filename.indexOf('log-invoke.decorator') !== -1 || c.functionName === 'anonymous') {
+    return c.getDate() + ' [' + c.getTypeName() + '] ';
   }
   return c.getDate() + ' [' + c.filename + ':' + c.getLineNumber() + '] ' + c.functionName;
 };
