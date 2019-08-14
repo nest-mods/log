@@ -22,9 +22,10 @@
  * SOFTWARE.
  */
 
-import { Logger, Module } from '@nestjs/common';
+import { Global, Logger, Module } from '@nestjs/common';
 import { DebugLoggerService } from './service/debug-logger.service';
 
+@Global()
 @Module({
   providers: [DebugLoggerService],
   exports: [DebugLoggerService],
