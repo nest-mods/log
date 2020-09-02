@@ -22,32 +22,31 @@
  * SOFTWARE.
  */
 
-/*
- * Created by Diluka on 2019-04-01.
- *
- *
- * ----------- 神 兽 佑 我 -----------
- *        ┏┓      ┏┓+ +
- *       ┏┛┻━━━━━━┛┻┓ + +
- *       ┃          ┃
- *       ┣     ━    ┃ ++ + + +
- *      ████━████   ┃+
- *       ┃          ┃ +
- *       ┃  ┴       ┃
- *       ┃          ┃ + +
- *       ┗━┓      ┏━┛  Code is far away from bug
- *         ┃      ┃       with the animal protecting
- *         ┃      ┃ + + + +
- *         ┃      ┃
- *         ┃      ┃ +
- *         ┃      ┃      +  +
- *         ┃      ┃    +
- *         ┃      ┗━━━┓ + +
- *         ┃          ┣┓
- *         ┃          ┏┛
- *         ┗┓┓┏━━━━┳┓┏┛ + + + +
- *          ┃┫┫    ┃┫┫
- *          ┗┻┛    ┗┻┛+ + + +
- * ----------- 永 无 BUG ------------
+import { Logger } from '@nestjs/common';
+import * as _ from 'lodash';
+import { Helpers } from './helpers.util';
+
+/**
+ * @see Logger.constructor
  */
-export type LevelType = 'trace' | 'debug' | 'log' | 'info' | 'warn' | 'error';
+export interface InjectLoggerOptions {
+  context?: string;
+  isTimeDiffEnabled?: boolean;
+}
+
+export function Log(prefix?: string, options?: InjectLoggerOptions): PropertyDecorator;
+export function Log(options?: InjectLoggerOptions): PropertyDecorator;
+export function Log(prefixOrOptions?: string | InjectLoggerOptions, options?: InjectLoggerOptions): PropertyDecorator {
+  let prefix;
+  if (_.isString(prefixOrOptions)) {
+    prefix = prefixOrOptions;
+  } else {
+    prefix = Helpers.DEFAULT_PREFIX;
+    options = prefixOrOptions || options;
+  }
+  return (target: object, propertyKey: string | symbol) => {
+    const context = options?.context || Helpers.getClassName(target);
+    const isTimeDiffEnabled = options?.isTimeDiffEnabled || true;
+    target[propertyKey] = new Logger(`${prefix}:${context}`, isTimeDiffEnabled);
+  };
+}

@@ -22,7 +22,5 @@
  * SOFTWARE.
  */
 
-export * from './log.module';
-export * from './decorator/log.decorator';
-export * from './decorator/log-invoke.decorator';
-
+export * from './log.decorator';
+export * from './log-invoke.decorator';

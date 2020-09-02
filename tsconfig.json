@@ -9,6 +9,7 @@
     "declaration": true,
     "outDir": "./dist",
     "importHelpers": true,
+    "incremental": true,
     "baseUrl": "./",
     "typeRoots": [
       "node_modules/@types"

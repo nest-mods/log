@@ -50,9 +50,9 @@
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
-import { Injectable, Logger, LoggerService } from '@nestjs/common';
+import { Injectable, LoggerService } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Log, LogInvoke, LogModule } from '../src';
+import { Log, LogInvoke } from '../src';
 
 @Injectable()
 class DemoService {
@@ -64,25 +64,26 @@ class DemoService {
   }
 
   test2() {
-    this.logger.error(['test2 %s', 'OK'], new Error('test2') as any);
+    this.logger.error(new Error('test2'));
   }
 
+  @LogInvoke()
   test3() {
     this.logger.warn({ test: 'OK' });
   }
 
-  @LogInvoke('test', { afterLevel: 'info', showParams: true })
+  @LogInvoke('test', { calling: { parameters: 'debug' }, called: { result: 'log' } })
   test4(a: string, b: number) {
     this.logger.debug('test4');
   }
 
-  @LogInvoke('test', { message: 'calling test5', printString: true, showReturns: true })
+  @LogInvoke('test', { calling: { notifyMessage: 'calling test5' }, called: { result: 'verbose' } })
   test5() {
     this.logger.log({ data: 'ok' });
     return { test: 'ok' };
   }
 
-  @LogInvoke('test', { message: 'log error' })
+  @LogInvoke('test', { throwing: { message: 'warn', stack: 'verbose' } })
   async test6() {
     throw new Error('oops!');
   }
@@ -94,7 +95,6 @@ describe('日志测试', function() {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [LogModule],
       providers: [DemoService],
     }).compile();
 

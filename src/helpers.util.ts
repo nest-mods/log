@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
+import { LoggerService, LogLevel } from '@nestjs/common';
 /*
- * Created by Diluka on 2019-02-18.
+ * Created by Diluka on 2019-03-15.
  *
  *
  * ----------- 神 兽 佑 我 -----------
@@ -50,21 +51,17 @@
  *          ┗┻┛    ┗┻┛+ + + +
  * ----------- 永 无 BUG ------------
  */
-module.exports = {
-  moduleFileExtensions: [
-    'js',
-    'json',
-    'ts',
-  ],
-  roots: ['<rootDir>/src', '<rootDir>/test'],
-  testRegex: '\\.(e2e-)?spec\\.ts$',
-  transform: {
-    '^.+\\.(t|j)s$': 'ts-jest',
-  },
-  coverageDirectory: '../coverage',
-  testEnvironment: 'node',
-  forceExit: true,
-};
+import * as _ from 'lodash';
 
-process.env.DEBUG = '*';
-process.env.DEBUG_LEVEL = 'trace';
+// tslint:disable-next-line:no-namespace
+export namespace Helpers {
+  export const DEFAULT_PREFIX = 'app';
+
+  export function getClassName(target: object) {
+    return _.isFunction(target) ? (target as any).name : target.constructor.name;
+  }
+
+  export function logWithLevel(logger: LoggerService, level: LogLevel) {
+    return (level in logger ? logger[level] : logger.log).bind(logger);
+  }
+}
