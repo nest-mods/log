@@ -1,6 +1,6 @@
 {
   "name": "@nest-mods/log",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "license": "MIT",
   "repository": "https://github.com/nest-mods/log",
   "main": "./dist/index.js",
