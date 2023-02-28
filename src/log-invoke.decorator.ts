@@ -97,8 +97,7 @@ export interface LogThrowingOptions extends LogOptionsBase {
 }
 
 // tslint:disable-next-line:no-empty-interface
-export interface LogCompletedOptions extends LogOptionsBase {
-}
+export interface LogCompletedOptions extends LogOptionsBase {}
 
 export interface LogInvokeOptions extends InjectLoggerOptions {
   /**
@@ -130,7 +129,10 @@ export const LogInvokeDefaultOptions: LogInvokeOptions = {
 
 export function LogInvoke(options?: LogInvokeOptions);
 export function LogInvoke(prefix?: string, options?: LogInvokeOptions);
-export function LogInvoke(prefixOrOptions?: string | LogInvokeOptions, options: LogInvokeOptions = {}): MethodDecorator {
+export function LogInvoke(
+  prefixOrOptions?: string | LogInvokeOptions,
+  options: LogInvokeOptions = {},
+): MethodDecorator {
   let prefix;
   if (_.isString(prefixOrOptions)) {
     prefix = prefixOrOptions;
@@ -141,21 +143,29 @@ export function LogInvoke(prefixOrOptions?: string | LogInvokeOptions, options: 
 
   options = _.defaultsDeep(options, LogInvokeDefaultOptions);
 
-  return (target: object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>) => {
+  return (
+    target: object,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<any>,
+  ) => {
     const className = Helpers.getClassName(target);
     const context = options.context || className;
-    const logger = new Logger(`${prefix}:${context}`, options.isTimeDiffEnabled);
+    const logger = new Logger(`${prefix}:${context}`, {
+      timestamp: options.isTimeDiffEnabled,
+    });
     const methodSign = `${className}#${propertyKey as any}`;
     const method = descriptor.value;
 
-    descriptor.value = async function(...args: any[]) {
-
+    descriptor.value = async function (...args: any[]) {
       const { calling, called, throwing, completed } = options;
 
       if (calling) {
         const { notify, notifyMessage, parameters } = calling;
         if (notify) {
-          Helpers.logWithLevel(logger, notify)(notifyMessage || `calling ${methodSign}`);
+          Helpers.logWithLevel(
+            logger,
+            notify,
+          )(notifyMessage || `calling ${methodSign}`);
         }
 
         if (parameters) {
@@ -170,7 +180,10 @@ export function LogInvoke(prefixOrOptions?: string | LogInvokeOptions, options: 
           const { result, notify, notifyMessage } = called;
 
           if (notify) {
-            Helpers.logWithLevel(logger, notify)(notifyMessage || `${methodSign} called`);
+            Helpers.logWithLevel(
+              logger,
+              notify,
+            )(notifyMessage || `${methodSign} called`);
           }
 
           if (result) {
@@ -184,7 +197,10 @@ export function LogInvoke(prefixOrOptions?: string | LogInvokeOptions, options: 
           const { message, stack, raw, notify, notifyMessage } = throwing;
 
           if (notify) {
-            Helpers.logWithLevel(logger, notify)(notifyMessage || `${methodSign} failed`);
+            Helpers.logWithLevel(
+              logger,
+              notify,
+            )(notifyMessage || `${methodSign} failed`);
           }
 
           if (e instanceof Error) {
@@ -203,7 +219,6 @@ export function LogInvoke(prefixOrOptions?: string | LogInvokeOptions, options: 
             Helpers.logWithLevel(logger, raw)('error:');
             Helpers.logWithLevel(logger, raw)(e);
           }
-
         }
         throw e;
       } finally {
@@ -211,7 +226,10 @@ export function LogInvoke(prefixOrOptions?: string | LogInvokeOptions, options: 
           const { notify, notifyMessage } = completed;
 
           if (notify) {
-            Helpers.logWithLevel(logger, notify)(notifyMessage || `call ${methodSign} completed`);
+            Helpers.logWithLevel(
+              logger,
+              notify,
+            )(notifyMessage || `call ${methodSign} completed`);
           }
         }
       }

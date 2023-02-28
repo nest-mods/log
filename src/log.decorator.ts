@@ -34,9 +34,15 @@ export interface InjectLoggerOptions {
   isTimeDiffEnabled?: boolean;
 }
 
-export function Log(prefix?: string, options?: InjectLoggerOptions): PropertyDecorator;
+export function Log(
+  prefix?: string,
+  options?: InjectLoggerOptions,
+): PropertyDecorator;
 export function Log(options?: InjectLoggerOptions): PropertyDecorator;
-export function Log(prefixOrOptions?: string | InjectLoggerOptions, options?: InjectLoggerOptions): PropertyDecorator {
+export function Log(
+  prefixOrOptions?: string | InjectLoggerOptions,
+  options?: InjectLoggerOptions,
+): PropertyDecorator {
   let prefix;
   if (_.isString(prefixOrOptions)) {
     prefix = prefixOrOptions;
@@ -47,6 +53,8 @@ export function Log(prefixOrOptions?: string | InjectLoggerOptions, options?: In
   return (target: object, propertyKey: string | symbol) => {
     const context = options?.context || Helpers.getClassName(target);
     const isTimeDiffEnabled = options?.isTimeDiffEnabled || true;
-    target[propertyKey] = new Logger(`${prefix}:${context}`, isTimeDiffEnabled);
+    target[propertyKey] = new Logger(`${prefix}:${context}`, {
+      timestamp: isTimeDiffEnabled,
+    });
   };
 }
